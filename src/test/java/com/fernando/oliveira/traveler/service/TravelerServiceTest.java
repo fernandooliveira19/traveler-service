@@ -24,11 +24,17 @@ import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 @SpringBootTest
 public class TravelerServiceTest {
 
-	private static String TRAVELER_NAME = "traveler 01";
-	private static String TRAVELER_EMAIL = "traveler@test.com";
+	private static final String TRAVELER_NAME = "traveler 01";
+	private static final String TRAVELER_EMAIL = "traveler@test.com";
 	
-	private static Integer TRAVELER_PHONE_PREFIX = 11;
-	private static String TRAVELER_PHONE_NUMBER = "988887777";
+	private static final Integer TRAVELER_PHONE_PREFIX = 11;
+	private static final String TRAVELER_PHONE_NUMBER = "988887777";
+	
+	private static final String TRAVELER_EMAIL_INVALID = "invalid.email.com";
+	
+	private static final String EMPTY = "";
+	
+	
 	
 
 	@MockBean
@@ -73,7 +79,7 @@ public class TravelerServiceTest {
 	}
 
 	@Test
-	public void shouldNotUpdateTravelerWithoutPhone() {
+	public void mustReturnExceptionMessageWhenTravelerHasNoPhone() {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
 		
 		Assertions.assertThrows(TravelerException.class, () -> travelerService.update(traveler),
@@ -82,7 +88,7 @@ public class TravelerServiceTest {
 	}
 
 	@Test
-	public void mustReturnExceptionMessageWhenTravelerHaventName() {
+	public void mustReturnExceptionMessageWhenTravelerHasNameNull() {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(null, TRAVELER_EMAIL, phone);
 		
@@ -91,32 +97,49 @@ public class TravelerServiceTest {
 	}
 	
 	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasNameEmpty() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(EMPTY, TRAVELER_EMAIL, phone);
+		
+		Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler),
+				"Nome é obrigatório");
+	}
+	
+	@Test
 	public void mustReturnExceptionWhenExistsAnotherTravelerWithSameName() {
-//		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
-//		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
-//		when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(traveler));
-//		
-//		 Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler), "Já existe viajante com o nome informado");
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(traveler));
+		
+		Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler), "Já existe viajante com o nome informado");
 	}
 
 	@Test
-	public void mustReturnExceptionMessageWhenTravelerHaventEmail() {
+	public void mustReturnExceptionMessageWhenTravelerHasEmailNull() {
 
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, null, phone);
+		
+		Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler),
+				"Email é obrigatório");
 	}
-
+	
 	@Test
-	public void mustReturnExceptionMessageWhenTravelerHaventPhone() {
-
+	public void mustReturnExceptionMessageWhenTravelerHasEmailEmpty() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, EMPTY, phone);
+		
+		Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler),
+				"Email é obrigatório");
 	}
-
+	
 	@Test
-	public void mustReturnExceptionMessageWhenTravelerHaveInvalidName() {
-
+	public void mustReturnExceptionMessageWhenTravelerHasEmailInvalid() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME,TRAVELER_EMAIL_INVALID , phone);
+		
+		Assertions.assertThrows(TravelerException.class, () -> travelerService.save(traveler),
+				"Email é obrigatório");
 	}
-
-	@Test
-	public void mustReturnExceptionMessageWhenTravelerHaveInvalidEmail() {
-
-	}
-
+	
 }
