@@ -5,8 +5,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +34,29 @@ public class TravelerServiceTest {
 	
 	private static final String EMPTY = "";
 	
-	
-	
-
 	@MockBean
 	private TravelerRepository travelerRepository;
+	
+	@MockBean
+	private PhoneService phoneService;
 
 	@Autowired
 	private TravelerServiceImpl travelerService;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		travelerService = new TravelerServiceImpl(travelerRepository);
+		travelerService = new TravelerServiceImpl(travelerRepository, phoneService);
+		
+	}
+	
+	private Traveler buildTraveler(String name, String email, Phone phone) {
+		Traveler traveler = Traveler.builder().email(email).name(name).phone(phone).build();
+		return traveler;
+	}
+
+	private Phone buildPhone(Integer prefix, String number) {
+		Phone phone = Phone.builder().prefix(prefix).number(number).build();
+		return phone;
 	}
 
 	@Test
@@ -57,16 +68,7 @@ public class TravelerServiceTest {
 
 		verify(travelerRepository).save(traveler);
 	}
-
-	private Traveler buildTraveler(String name, String email, Phone phone) {
-		Traveler traveler = Traveler.builder().email(email).name(name).phone(phone).build();
-		return traveler;
-	}
-
-	private Phone buildPhone(Integer prefix, String number) {
-		Phone phone = Phone.builder().prefix(prefix).number(number).build();
-		return phone;
-	}
+	
 
 	@Test
 	public void shouldNotSaveTravelerWithoutPhone() {

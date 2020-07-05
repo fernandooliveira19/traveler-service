@@ -1,15 +1,22 @@
 package com.fernando.oliveira.traveler.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
+import com.fernando.oliveira.traveler.dto.PhoneDTO;
+import com.fernando.oliveira.traveler.dto.TravelerDTO;
 import com.fernando.oliveira.traveler.exception.TravelerException;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
+import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
 
 @Service
@@ -18,15 +25,63 @@ public class TravelerServiceImpl implements TravelerService{
 	@Autowired
 	private TravelerRepository travelerRepository;
 	
-	public TravelerServiceImpl(TravelerRepository travelerRepository) {
+	@Autowired
+	private PhoneService phoneService;
+	
+	public TravelerServiceImpl(TravelerRepository travelerRepository, PhoneService phoneService) {
 		this.travelerRepository = travelerRepository;
+		this.phoneService = phoneService;
+	}
+	
+	@Override
+	public TravelerDTO createTraveler(TravelerDTO dto) {
+		
+		Traveler traveler = convertDtoToObject(dto);
+		
+		Traveler travelerSaved = save(traveler);
+		
+		return convertObjectToDto(travelerSaved);
 	}
 
+	private TravelerDTO convertObjectToDto(Traveler traveler) {
+		PhoneDTO phoneDTO = phoneService.convertObjectToDto(traveler.getPhone());
+		TravelerDTO travelerDTO = TravelerDTO.builder()
+										.id(traveler.getId())
+										.name(traveler.getName())
+										.email(traveler.getEmail())
+										.document(traveler.getDocument())
+										.phone(phoneDTO)
+										.build();
+		return travelerDTO;
+	}
+
+	private Traveler convertDtoToObject(TravelerDTO dto) {
+		Phone phone = phoneService.convertDtoToObject(dto.getPhone());
+		
+		Traveler traveler = Traveler.builder()
+								.name(dto.getName())
+								.email(dto.getEmail())
+								.document(dto.getDocument())
+								.phone(phone)
+								.build();
+		return traveler;
+	}
+
+	@Transactional
 	public Traveler save(Traveler traveler) {
 		
 		validate(traveler);
 		
-		return travelerRepository.save(traveler);
+		Traveler travelerSaved = travelerRepository.save(traveler);
+		
+		Phone phone = traveler.getPhone();
+
+		if (phone != null) {
+			phone.setTraveler(travelerSaved);
+			phoneService.save(phone);
+		}
+
+		return travelerSaved;
 	}
 	
 	public Traveler update(Traveler traveler) {
@@ -34,6 +89,24 @@ public class TravelerServiceImpl implements TravelerService{
 		validate(traveler);
 		
 		return travelerRepository.save(traveler);
+	}
+	
+	@Override
+	public Optional<Traveler> findById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Traveler> findAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Traveler> findTravelersByName(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	private void validate(Traveler traveler) {
@@ -111,5 +184,9 @@ public class TravelerServiceImpl implements TravelerService{
 		}
 
 	}
+
+	
+
+	
 	
 }
