@@ -15,6 +15,7 @@ Tecnologias utilizadas:
 * Maven
 * MySql
 * GIT Flow
+* Rest Assured
 
 ##### Estrutura de pacotes
 * **resource**: contém classes dos endpoints
