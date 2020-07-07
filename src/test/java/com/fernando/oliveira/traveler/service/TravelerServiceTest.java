@@ -16,8 +16,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
-import com.fernando.oliveira.traveler.exception.TravelerException;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
+import com.fernando.oliveira.traveler.service.exception.TravelerException;
 import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 
 @ExtendWith(SpringExtension.class)

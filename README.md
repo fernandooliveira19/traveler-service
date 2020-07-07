@@ -18,13 +18,15 @@ Tecnologias utilizadas:
 * Rest Assured
 
 ##### Estrutura de pacotes
-* **resource**: contém classes dos endpoints
+* **controller**: contém classes dos endpoints
+* **controller.exception**: contém classes que tratam as excessões dos endpoints
 * **dto**: contém classes que representam os dados retornados pelos endpoints
 * **service**: contém interfaces com assinaturas dos métodos de regras de negócios
 * **service.impl**: contém classes com implentações dos métodos de negócio
+* **service.exception**: contém classes que implementam as excessões verificadas da aplicação
 * **repository**: contém interfaces que realizam acesso à base de dados
 * **domain**: contém classes que representam o modelo de dados
-* **exception**: contém classes que implementam as excessões verificadas da aplicação
+* **config**: contém classes que implementam configurações do projeto
 
 
 

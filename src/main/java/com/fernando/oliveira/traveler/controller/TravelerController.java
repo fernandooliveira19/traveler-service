@@ -1,10 +1,16 @@
-package com.fernando.oliveira.traveler.resource;
+package com.fernando.oliveira.traveler.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,17 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
+import com.fernando.oliveira.traveler.resource.exception.TravelerExceptionHandler;
 import com.fernando.oliveira.traveler.service.TravelerService;
+import com.fernando.oliveira.traveler.service.exception.TravelerException;
 
 @RestController
 @RequestMapping("/api/travelers")
-public class TravelerResource {
+public class TravelerController {
 	
 	@Autowired
 	private TravelerService travelerService;
 	
 	@PostMapping
-	public ResponseEntity<TravelerDTO> createTraveler(@RequestBody TravelerDTO dto){
+	public ResponseEntity<TravelerDTO> createTraveler(@Valid @RequestBody TravelerDTO dto){
 		
 		TravelerDTO createdTraveler = travelerService.createTraveler(dto);
 		
@@ -46,6 +54,17 @@ public class TravelerResource {
 		
 	}
 	
+	
+	 @ExceptionHandler({TravelerException.class})
+	    public ResponseEntity<Object> handleTravelerException(TravelerException ex) {
+
+	        final String message = ex.getMessage();
+	        final String exceptionMessage = ExceptionUtils.getRootCauseMessage(ex);
+
+	        final List<TravelerExceptionHandler.Erro> errors = Arrays.asList(new TravelerExceptionHandler.Erro(message, exceptionMessage));
+
+	        return ResponseEntity.badRequest().body(errors);
+	    }
 	
 	
 

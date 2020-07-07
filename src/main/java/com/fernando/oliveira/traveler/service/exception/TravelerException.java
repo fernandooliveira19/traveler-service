@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.exception;
+package com.fernando.oliveira.traveler.service.exception;
 
 public class TravelerException extends RuntimeException {
 

@@ -14,10 +14,10 @@ import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.PhoneDTO;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
-import com.fernando.oliveira.traveler.exception.TravelerException;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
+import com.fernando.oliveira.traveler.service.exception.TravelerException;
 
 @Service
 public class TravelerServiceImpl implements TravelerService{
@@ -161,13 +161,6 @@ public class TravelerServiceImpl implements TravelerService{
 		if (email == null) {
 			throw new TravelerException("Email é obrigatorio");
 		}
-		// System.out.print(email +" = ");
-		// expressões regex para e-mail invalido
-		// (.)*@(.)*@(.)* não pode ter mais de um @
-		// (.)*[.][.](.)* não pode ter ponto seguido ..
-		// (.)*[.]@(.)* não pode ter @.
-		// (.)*@[.](.)* não pode ter .@
-		// ^[.](.)* não pode começar com .
 		String inv = "((.)*@(.)*@(.)*|(.)*[.][.](.)*|(.)*[.]@(.)*|(.)*@[.](.)*|^[.](.)*)";
 		boolean invalido = Pattern.matches(inv, email);
 
@@ -175,7 +168,6 @@ public class TravelerServiceImpl implements TravelerService{
 			throw new TravelerException("Email inválido");
 		}
 
-		// expressão regex para e-mail valido
 		String regValido = "^(.)+@[a-zA-Z0-9[-][.]]+[.]([a-zA-Z]{2,61}|[0-9]{1,3})";
 		boolean valido = Pattern.matches(regValido, email);
 
