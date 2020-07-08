@@ -18,6 +18,7 @@ import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
 import com.fernando.oliveira.traveler.service.exception.TravelerException;
+import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
 
 @Service
 public class TravelerServiceImpl implements TravelerService{
@@ -131,20 +132,20 @@ public class TravelerServiceImpl implements TravelerService{
 		
 		if(travelerSaved.isPresent()
 				&& traveler.getId() == null) {
-			throw new TravelerException("Já existe viajante com o nome informado");
+			throw new TravelerInvalidException("Já existe viajante com o nome informado");
 		}
 	}
 	
 	private void validateTravelerName(Traveler traveler) {
 		if(StringUtils.isEmpty(traveler.getName())) {
-			throw new TravelerException("Nome é obrigatório");
+			throw new TravelerInvalidException("Nome é obrigatório");
 		}
 	}
 	
 	private void validateTravelerEmail(Traveler traveler) {
 		
 		if(StringUtils.isEmpty(traveler.getEmail())) {
-			throw new TravelerException("Email é obrigatório");
+			throw new TravelerInvalidException("Email é obrigatório");
 		}
 		validateEmail(traveler.getEmail());
 	}
@@ -152,14 +153,14 @@ public class TravelerServiceImpl implements TravelerService{
 	private void validateTravelerPhone(Traveler traveler) {
 	
 		if(traveler.getPhone() == null) {
-			throw new TravelerException("Telefone é obrigatório");
+			throw new TravelerInvalidException("Telefone é obrigatório");
 		}
 	}
 	
 	private void validateEmail(String email) {
 
 		if (email == null) {
-			throw new TravelerException("Email é obrigatorio");
+			throw new TravelerInvalidException("Email é obrigatorio");
 		}
 		String inv = "((.)*@(.)*@(.)*|(.)*[.][.](.)*|(.)*[.]@(.)*|(.)*@[.](.)*|^[.](.)*)";
 		boolean invalido = Pattern.matches(inv, email);
@@ -172,7 +173,7 @@ public class TravelerServiceImpl implements TravelerService{
 		boolean valido = Pattern.matches(regValido, email);
 
 		if (!valido) {
-			throw new TravelerException("Email inválido");
+			throw new TravelerInvalidException("Email inválido");
 		}
 
 	}
