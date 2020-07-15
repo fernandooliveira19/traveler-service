@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.resource;
+package com.fernando.oliveira.traveler.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,7 +25,6 @@ import io.restassured.response.Response;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-// @AutoConfigureMockMvc
 public class TravelerControllerTest {
 
 	private static final Integer PHONE_PREFIX = new Integer(11);
@@ -45,33 +44,26 @@ public class TravelerControllerTest {
 		RestAssured.port = serverPort;
 	}
 
-	private Map<String, Object> buildTraveler(Map<String, Object> phone,String name, String email, String document) {
-		Map<String, Object> traveler = new HashMap<String, Object>();
-		traveler.put("name", name);
-		traveler.put("email", email);
-		traveler.put("document", document);
-		traveler.put("phone", phone);
-		return traveler;
-	}
-
-	private Map<String, Object> buildPhone(Integer prefix, String number) {
-		Map<String, Object> phone = new HashMap<String, Object>();
-		phone.put("prefix", prefix);
-		phone.put("number", number);
-		return phone;
+	private Map<String, Object> buildTravelerDTO(String name, String email, String document, Integer prefixPhone, String numberPhone) {
+		Map<String, Object> travelerDTO = new HashMap<String, Object>();
+		travelerDTO.put("name", name);
+		travelerDTO.put("email", email);
+		travelerDTO.put("document", document);
+		travelerDTO.put("prefixPhone", prefixPhone);
+		travelerDTO.put("numberPhone", numberPhone);
+		return travelerDTO;
 	}
 
 	
 	@Test
 	public void shouldCreateTraveler() {
 
-		Map<String, Object> phone = buildPhone(PHONE_PREFIX, PHONE_NUMBER);
-
-		Map<String, Object> traveler = buildTraveler(phone, TRAVELER_NAME, TRAVELER_EMAIL, TRAVELER_DOCUMENT);
+		
+		Map<String, Object> travelerDTO = buildTravelerDTO(TRAVELER_NAME, TRAVELER_EMAIL, TRAVELER_DOCUMENT,PHONE_PREFIX, PHONE_NUMBER);
 
 		Response response = RestAssured.given().contentType("application/json").accept("application/json")
-				.body(traveler).when().post("http://localhost:" + serverPort + "/api/travelers").then()
-				.statusCode(HttpStatus.OK.value()).contentType("application/json").extract().response();
+				.body(travelerDTO).when().post("http://localhost:" + serverPort + "/api/travelers").then()
+				.statusCode(HttpStatus.CREATED.value()).contentType("application/json").extract().response();
 		String userId = response.jsonPath().getString("id");
 		assertNotNull(userId);
 
@@ -80,12 +72,10 @@ public class TravelerControllerTest {
 	@Test
 	public void shouldReturnBadRequestCodeWhenTravelerNotValidated() {
 
-		Map<String, Object> phone = buildPhone(PHONE_PREFIX, PHONE_NUMBER);
-
-		Map<String, Object> traveler = buildTraveler(phone, null, TRAVELER_EMAIL, TRAVELER_DOCUMENT);
+		Map<String, Object> travelerDTO = buildTravelerDTO(null, TRAVELER_EMAIL, TRAVELER_DOCUMENT,PHONE_PREFIX, PHONE_NUMBER);
 
 		Response response = RestAssured.given().contentType("application/json").accept("application/json")
-				.body(traveler).when().post("http://localhost:" + serverPort + "/api/travelers")
+				.body(travelerDTO).when().post("http://localhost:" + serverPort + "/api/travelers")
 				.then()
 					.contentType("application/json").extract().response();
 		
