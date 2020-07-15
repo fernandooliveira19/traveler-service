@@ -34,13 +34,16 @@ public class TravelerControllerTest {
 	private static final String TRAVELER_EMAIL= "traveler04@test.com";
 	private static final String TRAVELER_DOCUMENT= "444.444.444.-44";
 	
+	private static final String BASE_URI = "http://localhost:";
+	private static final String CONTENT_TYPE = "application/json";
+	
 
 	@Value("${server.port}")
 	private int serverPort;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		RestAssured.baseURI = "http://localhost";
+		RestAssured.baseURI = BASE_URI;
 		RestAssured.port = serverPort;
 	}
 
@@ -61,23 +64,23 @@ public class TravelerControllerTest {
 		
 		Map<String, Object> travelerDTO = buildTravelerDTO(TRAVELER_NAME, TRAVELER_EMAIL, TRAVELER_DOCUMENT,PHONE_PREFIX, PHONE_NUMBER);
 
-		Response response = RestAssured.given().contentType("application/json").accept("application/json")
-				.body(travelerDTO).when().post("http://localhost:" + serverPort + "/api/travelers").then()
-				.statusCode(HttpStatus.CREATED.value()).contentType("application/json").extract().response();
+		Response response = RestAssured.given().contentType(CONTENT_TYPE).accept(CONTENT_TYPE)
+				.body(travelerDTO).when().post(BASE_URI + serverPort + "/api/travelers").then()
+				.statusCode(HttpStatus.CREATED.value()).contentType(CONTENT_TYPE).extract().response();
 		String userId = response.jsonPath().getString("id");
 		assertNotNull(userId);
 
 	}
 
 	@Test
-	public void shouldReturnBadRequestCodeWhenTravelerNotValidated() {
+	public void shouldReturnBadRequestCodeWhenTravelerIsInvalid() {
 
 		Map<String, Object> travelerDTO = buildTravelerDTO(null, TRAVELER_EMAIL, TRAVELER_DOCUMENT,PHONE_PREFIX, PHONE_NUMBER);
 
-		Response response = RestAssured.given().contentType("application/json").accept("application/json")
-				.body(travelerDTO).when().post("http://localhost:" + serverPort + "/api/travelers")
+		Response response = RestAssured.given().contentType(CONTENT_TYPE).accept(CONTENT_TYPE)
+				.body(travelerDTO).when().post(BASE_URI + serverPort + "/api/travelers")
 				.then()
-					.contentType("application/json").extract().response();
+					.contentType(CONTENT_TYPE).extract().response();
 		
 		Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
 		
