@@ -34,39 +34,39 @@ public class TravelerServiceImpl implements TravelerService{
 		this.phoneService = phoneService;
 	}
 	
-	@Override
-	public TravelerDTO createTraveler(TravelerDTO dto) {
-		
-		Traveler traveler = convertDtoToObject(dto);
-		
-		Traveler travelerSaved = save(traveler);
-		
-		return convertObjectToDto(travelerSaved);
-	}
+//	@Override
+//	public TravelerDTO createTraveler(TravelerDTO dto) {
+//		
+//		Traveler traveler = convertDtoToObject(dto);
+//		
+//		Traveler travelerSaved = save(traveler);
+//		
+//		return convertObjectToDto(travelerSaved);
+//	}
 
-	private TravelerDTO convertObjectToDto(Traveler traveler) {
-		PhoneDTO phoneDTO = phoneService.convertObjectToDto(traveler.getPhone());
-		TravelerDTO travelerDTO = TravelerDTO.builder()
-										.id(traveler.getId())
-										.name(traveler.getName())
-										.email(traveler.getEmail())
-										.document(traveler.getDocument())
-										.phone(phoneDTO)
-										.build();
-		return travelerDTO;
-	}
+//	private TravelerDTO convertObjectToDto(Traveler traveler) {
+//		PhoneDTO phoneDTO = phoneService.convertObjectToDto(traveler.getPhone());
+//		TravelerDTO travelerDTO = TravelerDTO.builder()
+//										.id(traveler.getId())
+//										.name(traveler.getName())
+//										.email(traveler.getEmail())
+//										.document(traveler.getDocument())
+//										.phone(phoneDTO)
+//										.build();
+//		return travelerDTO;
+//	}
 
-	private Traveler convertDtoToObject(TravelerDTO dto) {
-		Phone phone = phoneService.convertDtoToObject(dto.getPhone());
-		
-		Traveler traveler = Traveler.builder()
-								.name(dto.getName())
-								.email(dto.getEmail())
-								.document(dto.getDocument())
-								.phone(phone)
-								.build();
-		return traveler;
-	}
+//	private Traveler convertDtoToObject(TravelerDTO dto) {
+//		Phone phone = phoneService.convertDtoToObject(dto.getPhone());
+//		
+//		Traveler traveler = Traveler.builder()
+//								.name(dto.getName())
+//								.email(dto.getEmail())
+//								.document(dto.getDocument())
+//								.phone(phone)
+//								.build();
+//		return traveler;
+//	}
 
 	@Transactional
 	public Traveler save(Traveler traveler) {

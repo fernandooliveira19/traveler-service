@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fernando.oliveira.traveler.domain.Traveler;
-import com.fernando.oliveira.traveler.dto.TravelerDTO;
 
 public interface TravelerService {
 	
@@ -18,7 +17,7 @@ public interface TravelerService {
 	
 	public List<Traveler> findTravelersByName(String name);
 
-	public TravelerDTO createTraveler(TravelerDTO dto);
+//	public TravelerDTO createTraveler(TravelerDTO dto);
 	
 	
 }
