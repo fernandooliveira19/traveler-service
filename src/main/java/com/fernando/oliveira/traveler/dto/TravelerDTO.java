@@ -1,6 +1,7 @@
 package com.fernando.oliveira.traveler.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fernando.oliveira.traveler.domain.Phone;
+import com.fernando.oliveira.traveler.domain.Traveler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,12 +22,28 @@ public class TravelerDTO {
 	
 	private String document;
 	
-	private PhoneDTO phone;
+	private Integer prefixPhone;
+	
+	private String numberPhone; 
 	
 
-	public TravelerDTO(Long id, String name) {
-		this.id = id;
-		this.name = name;
+	public Traveler convertToTraveler() {
+		
+		Traveler traveler = Traveler.builder()
+								.name(name)
+								.email(email)
+								.document(document)
+								.phone(buildPhone())
+								.build();
+		return traveler;
+	}
+	
+	private Phone buildPhone() {
+		Phone phone = Phone.builder()
+						.prefix(prefixPhone)
+						.number(numberPhone)
+						.build();
+		return phone;
 	}
 
 }
