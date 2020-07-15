@@ -28,9 +28,11 @@ public class TravelerController {
 	@PostMapping
 	public ResponseEntity<TravelerDTO> createTraveler(@Valid @RequestBody TravelerDTO dto){
 		
-		TravelerDTO createdTraveler = travelerService.createTraveler(dto);
+		Traveler travelerToSave = dto.convertToTraveler();
 		
-		return new ResponseEntity<TravelerDTO>(createdTraveler, HttpStatus.OK);
+		Traveler createdTraveler = travelerService.save(travelerToSave);
+		
+		return new ResponseEntity<TravelerDTO>(createdTraveler.convertToDTO(), HttpStatus.CREATED);
 		
 	}
 	
