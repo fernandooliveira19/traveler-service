@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fernando.oliveira.traveler.dto.TravelerDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,6 +47,18 @@ public class Traveler implements Serializable{
 	
 	public Traveler(Long id) {
 		this.id = id;
+	}
+
+	public TravelerDTO convertToDTO() {
+		TravelerDTO travelerDTO = TravelerDTO.builder()
+									.id(id)					
+									.name(name)
+									.email(email)
+									.document(document)
+									.prefixPhone(phone.getPrefix())
+									.numberPhone(phone.getNumber())
+									.build();
+		return travelerDTO;
 	}
 	
 
