@@ -45,10 +45,7 @@ public class Traveler implements Serializable{
 	@OneToOne(mappedBy="traveler", cascade=CascadeType.ALL)
 	private Phone phone;
 	
-	public Traveler(Long id) {
-		this.id = id;
-	}
-
+	
 	public TravelerDTO convertToDTO() {
 		TravelerDTO travelerDTO = TravelerDTO.builder()
 									.id(id)					

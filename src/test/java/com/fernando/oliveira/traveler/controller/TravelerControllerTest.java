@@ -87,4 +87,19 @@ public class TravelerControllerTest {
 			
 	}
 	
+	@Test
+	public void shouldReturnMessageWhenTravelerHaveNotName() {
+
+		Map<String, Object> travelerDTO = buildTravelerDTO(null, TRAVELER_EMAIL, TRAVELER_DOCUMENT,PHONE_PREFIX, PHONE_NUMBER);
+
+		Response response = RestAssured.given().contentType(CONTENT_TYPE).accept(CONTENT_TYPE)
+				.body(travelerDTO).when().post(BASE_URI + serverPort + "/api/travelers")
+				.then()
+					.contentType(CONTENT_TYPE).extract().response();
+		String message = response.jsonPath().getString("message");
+		Assertions.assertEquals("Nome é obrigatório", message);
+		
+			
+	}
+	
 }
