@@ -2,6 +2,8 @@ package com.fernando.oliveira.traveler.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
@@ -20,17 +22,23 @@ public class TravelerDTO {
 	private Long id;
 	
 	@NotBlank(message="Nome é obrigatório")
+	@NotNull(message="Nome é obrigatório")
 	private String name;
 	
 	@Email(message="Email inválido")
+	@NotBlank(message="Email é obrigatório")
 	private String email;
 	
 	private String document;
 	
 	@NotBlank(message="DDD é obrigatório")
+	@NotNull(message="DDD é obrigatório")
+	@Size(min=2, max=2, message="DDD deve ter 2 dígitos")
 	private Integer prefixPhone;
 	
 	@NotBlank(message="Telefone é obrigatório")
+	@NotNull(message="Telefone é obrigatório")
+	@Size(min=8, max=9, message="Telefone inválido")
 	private String numberPhone; 
 	
 
