@@ -37,16 +37,19 @@ public class TravelerServiceImpl implements TravelerService{
 		
 		validate(traveler);
 		
-		Traveler travelerSaved = travelerRepository.save(traveler);
+		Traveler createdTraveler = travelerRepository.save(traveler);
+		
+		createOrUpdatePhone(createdTraveler);
+
+		return createdTraveler;
+	}
+
+	private void createOrUpdatePhone(Traveler traveler) {
 		
 		Phone phone = traveler.getPhone();
-
-		if (phone != null) {
-			phone.setTraveler(travelerSaved);
-			phoneService.save(phone);
-		}
-
-		return travelerSaved;
+		phone.setTraveler(traveler);
+		phoneService.save(phone);
+		
 	}
 	
 	public Traveler update(Traveler traveler) {
