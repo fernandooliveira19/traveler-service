@@ -32,7 +32,7 @@ public class TravelerController {
 		
 		Traveler createdTraveler = travelerService.save(travelerToSave);
 		
-		return new ResponseEntity<TravelerDTO>(createdTraveler.convertToDTO(), HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdTraveler.convertToDTO());
 		
 	}
 	
