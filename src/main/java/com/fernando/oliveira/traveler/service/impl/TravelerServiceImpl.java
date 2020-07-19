@@ -89,7 +89,7 @@ public class TravelerServiceImpl implements TravelerService{
 		
 	}
 
-	private void validateUniqueTraveler(Traveler traveler) {
+	public void validateUniqueTraveler(Traveler traveler) {
 		Optional<Traveler> travelerSaved = travelerRepository.findByName(traveler.getName());
 		
 		if(travelerSaved.isPresent()
