@@ -117,6 +117,14 @@ public class TravelerServiceImpl implements TravelerService{
 		if(traveler.getPhone() == null) {
 			throw new TravelerInvalidException("Telefone é obrigatório");
 		}
+		
+		if(traveler.getPhone().getPrefix() == null) {
+			throw new TravelerInvalidException("Telefone inválido");
+		}
+		
+		if(StringUtils.isEmpty(traveler.getPhone().getNumber())){
+			throw new TravelerInvalidException("Telefone inválido");
+		}
 	}
 	
 	private void validateEmail(String email) {

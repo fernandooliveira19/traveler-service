@@ -72,7 +72,6 @@ public class TravelerServiceTest {
 	}
 
 	@Test
-	@Disabled
 	public void shouldCreateTravelerWithPhone() {
 
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
@@ -91,6 +90,36 @@ public class TravelerServiceTest {
 	}
 
 
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithoutPrefix() {
+		Phone phone = buildPhone(null, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithoutNumber() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, null);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithEmptyNumber() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, "");
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
 	@Test
 	public void mustReturnExceptionMessageWhenTravelerHasNoPhone() {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
