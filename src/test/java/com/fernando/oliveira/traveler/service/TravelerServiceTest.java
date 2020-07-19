@@ -117,8 +117,8 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(null, TRAVELER_EMAIL, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Nome é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Nome é obrigatório", exception.getMessage());
 	}
 	
 	@Test
@@ -126,8 +126,9 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(EMPTY, TRAVELER_EMAIL, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Nome é obrigatório");
+
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Nome é obrigatório", exception.getMessage());
 	}
 	
 	@Test
@@ -136,7 +137,8 @@ public class TravelerServiceTest {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
 		when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(traveler));
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler), "Já existe viajante com o nome informado");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Já existe viajante com o nome informado", exception.getMessage());
 	}
 
 	@Test
@@ -167,9 +169,6 @@ public class TravelerServiceTest {
 		
 		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
 		Assertions.assertEquals("Email inválido", exception.getMessage());
-		
-//		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-//				"Email inválido");
 		
 	}
 	
