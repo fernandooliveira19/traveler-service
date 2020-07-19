@@ -165,8 +165,11 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(TRAVELER_NAME,TRAVELER_EMAIL_INVALID , phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Email inválido");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Email inválido", exception.getMessage());
+		
+//		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
+//				"Email inválido");
 		
 	}
 	
