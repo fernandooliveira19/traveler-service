@@ -6,22 +6,22 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
+import com.fernando.oliveira.traveler.service.impl.PhoneServiceImpl;
 import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class TravelerServiceTest {
 
 	private static final String TRAVELER_NAME = "traveler 01";
@@ -34,21 +34,15 @@ public class TravelerServiceTest {
 	
 	private static final String EMPTY = "";
 	
-	@MockBean
+	@Mock
 	private TravelerRepository travelerRepository;
 	
-	@MockBean
-	private PhoneService phoneService;
+	@Mock
+	private PhoneServiceImpl phoneService;
 
-	@Autowired
+	@InjectMocks
 	private TravelerServiceImpl travelerService;
 
-	@BeforeEach
-	public void setUp() {
-		travelerService = new TravelerServiceImpl(travelerRepository, phoneService);
-		
-	}
-	
 	private Traveler buildTraveler(String name, String email, Phone phone) {
 		Traveler traveler = Traveler.builder().email(email).name(name).phone(phone).build();
 		return traveler;
@@ -61,14 +55,37 @@ public class TravelerServiceTest {
 
 	@Test
 	public void shouldCreateTraveler() {
-		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
-		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
 
-		travelerService.save(traveler);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToSave = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Traveler savedTraveler = travelerToSave;
+		savedTraveler.setId(1L);
+		Mockito.when(travelerRepository.save(travelerToSave)).thenReturn(savedTraveler);
 		
-		verify(travelerRepository).save(traveler);
+		savedTraveler = travelerService.save(travelerToSave);
+		
+		Assertions.assertNotNull(savedTraveler.getId());
+		verify(travelerRepository).save(travelerToSave);
+		
 	}
-	
+
+	@Test
+	public void shouldCreateTravelerWithPhone() {
+
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToSave = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Traveler savedTraveler = travelerToSave;
+		savedTraveler.setId(1L);
+		Mockito.when(travelerRepository.save(travelerToSave)).thenReturn(savedTraveler);
+		
+		savedTraveler = travelerService.save(travelerToSave);
+		
+		Assertions.assertNotNull(savedTraveler.getPhone().getTraveler());
+		verify(phoneService).save(travelerToSave.getPhone());
+		
+		
+	}
+
 
 	@Test
 	public void shouldNotSaveTravelerWithoutPhone() {

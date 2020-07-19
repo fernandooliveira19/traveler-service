@@ -27,11 +27,6 @@ public class TravelerServiceImpl implements TravelerService{
 	@Autowired
 	private PhoneService phoneService;
 	
-	public TravelerServiceImpl(TravelerRepository travelerRepository, PhoneService phoneService) {
-		this.travelerRepository = travelerRepository;
-		this.phoneService = phoneService;
-	}
-
 	@Transactional
 	public Traveler save(Traveler traveler) {
 		
