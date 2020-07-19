@@ -92,23 +92,11 @@ public class TravelerServiceTest {
 
 
 	@Test
-	public void shouldNotSaveTravelerWithoutPhone() {
-
-		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
-		
-		when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(traveler));
-		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Viajante deve possuir um telefone");
-
-	}
-
-	@Test
 	public void mustReturnExceptionMessageWhenTravelerHasNoPhone() {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(traveler),
-				"Telefone é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone é obrigatório", exception.getMessage());
 
 	}
 
