@@ -1,5 +1,6 @@
 package com.fernando.oliveira.traveler.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -12,9 +13,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.fernando.oliveira.traveler.domain.Traveler;
-import com.fernando.oliveira.traveler.repository.TravelerRepository;
 
 @Sql(value="/load-db.sql", executionPhase=Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value="/clear-db.sql", executionPhase=Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application-test.properties")
 @DataJpaTest
@@ -31,6 +32,26 @@ public class TravelerRepositoryTest {
 		Optional<Traveler> result = travelerRepository.findByName(TRAVELER_NAME);
 		
 		Assertions.assertThat(result.isPresent());
+		
+	}
+	
+	@Test
+	public void shuoldReturnTravelerByPartOfName() {
+		String partOfName = "TRAVELER";
+		
+		Optional<List<Traveler>> result = travelerRepository.findByNameContainingOrderByNameAsc(partOfName);
+		
+		Assertions.assertThat(result.isPresent()).isEqualTo(true);
+		
+	}
+	
+	@Test
+	public void shuoldReturnListOfTravelerByPartOfName() {
+		String partOfName = "TRAVELER";
+		
+		Optional<List<Traveler>> result = travelerRepository.findByNameContainingOrderByNameAsc(partOfName);
+		
+		Assertions.assertThat(result.get().size()).isEqualTo(3);
 		
 	}
 	
