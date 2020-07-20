@@ -1,33 +1,28 @@
 package com.fernando.oliveira.traveler.controller.exception;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class ExceptionResponse {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class ExceptionResponse implements Serializable{
 	
-	private Date timestamp;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int code;
 	private String message;
-	private String details;
-	
-	
-	public ExceptionResponse() {
-		super();
-	}
-	public ExceptionResponse(Date timestamp, String message, String details) {
-		super();
-		this.timestamp = timestamp;
-		this.message = message;
-		this.details = details;
-	}
-	public Date getTimestamp() {
-		return timestamp;
-	}
-	public String getMessage() {
-		return message;
-	}
-	public String getDetails() {
-		return details;
-	}
-	
+	private Date timestamp;
+	private List<String> errors;
 	
 
 }

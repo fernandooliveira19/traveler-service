@@ -12,8 +12,6 @@ import org.springframework.util.StringUtils;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
-import com.fernando.oliveira.traveler.dto.PhoneDTO;
-import com.fernando.oliveira.traveler.dto.TravelerDTO;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
@@ -29,60 +27,24 @@ public class TravelerServiceImpl implements TravelerService{
 	@Autowired
 	private PhoneService phoneService;
 	
-	public TravelerServiceImpl(TravelerRepository travelerRepository, PhoneService phoneService) {
-		this.travelerRepository = travelerRepository;
-		this.phoneService = phoneService;
-	}
-	
-	@Override
-	public TravelerDTO createTraveler(TravelerDTO dto) {
-		
-		Traveler traveler = convertDtoToObject(dto);
-		
-		Traveler travelerSaved = save(traveler);
-		
-		return convertObjectToDto(travelerSaved);
-	}
-
-	private TravelerDTO convertObjectToDto(Traveler traveler) {
-		PhoneDTO phoneDTO = phoneService.convertObjectToDto(traveler.getPhone());
-		TravelerDTO travelerDTO = TravelerDTO.builder()
-										.id(traveler.getId())
-										.name(traveler.getName())
-										.email(traveler.getEmail())
-										.document(traveler.getDocument())
-										.phone(phoneDTO)
-										.build();
-		return travelerDTO;
-	}
-
-	private Traveler convertDtoToObject(TravelerDTO dto) {
-		Phone phone = phoneService.convertDtoToObject(dto.getPhone());
-		
-		Traveler traveler = Traveler.builder()
-								.name(dto.getName())
-								.email(dto.getEmail())
-								.document(dto.getDocument())
-								.phone(phone)
-								.build();
-		return traveler;
-	}
-
 	@Transactional
 	public Traveler save(Traveler traveler) {
 		
 		validate(traveler);
 		
-		Traveler travelerSaved = travelerRepository.save(traveler);
+		Traveler createdTraveler = travelerRepository.save(traveler);
+		
+		createOrUpdatePhone(createdTraveler);
+
+		return createdTraveler;
+	}
+
+	private void createOrUpdatePhone(Traveler traveler) {
 		
 		Phone phone = traveler.getPhone();
-
-		if (phone != null) {
-			phone.setTraveler(travelerSaved);
-			phoneService.save(phone);
-		}
-
-		return travelerSaved;
+		phone.setTraveler(traveler);
+		phoneService.save(phone);
+		
 	}
 	
 	public Traveler update(Traveler traveler) {
@@ -127,7 +89,7 @@ public class TravelerServiceImpl implements TravelerService{
 		
 	}
 
-	private void validateUniqueTraveler(Traveler traveler) {
+	public void validateUniqueTraveler(Traveler traveler) {
 		Optional<Traveler> travelerSaved = travelerRepository.findByName(traveler.getName());
 		
 		if(travelerSaved.isPresent()
@@ -154,6 +116,14 @@ public class TravelerServiceImpl implements TravelerService{
 	
 		if(traveler.getPhone() == null) {
 			throw new TravelerInvalidException("Telefone é obrigatório");
+		}
+		
+		if(traveler.getPhone().getPrefix() == null) {
+			throw new TravelerInvalidException("Telefone inválido");
+		}
+		
+		if(StringUtils.isEmpty(traveler.getPhone().getNumber())){
+			throw new TravelerInvalidException("Telefone inválido");
 		}
 	}
 	

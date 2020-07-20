@@ -6,13 +6,14 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
@@ -20,8 +21,7 @@ import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
 import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class TravelerServiceTest {
 
 	private static final String TRAVELER_NAME = "traveler 01";
@@ -34,21 +34,17 @@ public class TravelerServiceTest {
 	
 	private static final String EMPTY = "";
 	
-	@MockBean
+	@Mock
 	private TravelerRepository travelerRepository;
 	
-	@MockBean
+	@Mock
 	private PhoneService phoneService;
 
-	@Autowired
+	@Spy
+	@InjectMocks
 	private TravelerServiceImpl travelerService;
-
-	@BeforeEach
-	public void setUp() {
-		travelerService = new TravelerServiceImpl(travelerRepository, phoneService);
-		
-	}
 	
+
 	private Traveler buildTraveler(String name, String email, Phone phone) {
 		Traveler traveler = Traveler.builder().email(email).name(name).phone(phone).build();
 		return traveler;
@@ -61,31 +57,75 @@ public class TravelerServiceTest {
 
 	@Test
 	public void shouldCreateTraveler() {
-		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
-		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
 
-		travelerService.save(traveler);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToSave = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Traveler savedTraveler = travelerToSave;
+		savedTraveler.setId(1L);
+		Mockito.when(travelerRepository.save(travelerToSave)).thenReturn(savedTraveler);
 		
-		verify(travelerRepository).save(traveler);
+		savedTraveler = travelerService.save(travelerToSave);
+		
+		Assertions.assertNotNull(savedTraveler.getId());
+		verify(travelerRepository).save(travelerToSave);
+		
 	}
-	
 
 	@Test
-	public void shouldNotSaveTravelerWithoutPhone() {
+	public void shouldCreateTravelerWithPhone() {
 
-		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToSave = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Traveler savedTraveler = travelerToSave;
+		savedTraveler.setId(2L);
+		Mockito.when(travelerRepository.save(travelerToSave)).thenReturn(savedTraveler);
+		Mockito.when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.empty());
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Viajante deve possuir um telefone");
-
+		savedTraveler = travelerService.save(travelerToSave);
+		
+		Assertions.assertNotNull(savedTraveler.getPhone().getTraveler());
+		verify(phoneService).save(travelerToSave.getPhone());
+		
+		
 	}
 
+
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithoutPrefix() {
+		Phone phone = buildPhone(null, TRAVELER_PHONE_NUMBER);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithoutNumber() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, null);
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenTravelerHasPhoneWithEmptyNumber() {
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, "");
+		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone inválido", exception.getMessage());
+
+	}
+	
 	@Test
 	public void mustReturnExceptionMessageWhenTravelerHasNoPhone() {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(traveler),
-				"Telefone é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Telefone é obrigatório", exception.getMessage());
 
 	}
 
@@ -94,8 +134,8 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(null, TRAVELER_EMAIL, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Nome é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Nome é obrigatório", exception.getMessage());
 	}
 	
 	@Test
@@ -103,8 +143,9 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(EMPTY, TRAVELER_EMAIL, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Nome é obrigatório");
+
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Nome é obrigatório", exception.getMessage());
 	}
 	
 	@Test
@@ -113,7 +154,8 @@ public class TravelerServiceTest {
 		Traveler traveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
 		when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(traveler));
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler), "Já existe viajante com o nome informado");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Já existe viajante com o nome informado", exception.getMessage());
 	}
 
 	@Test
@@ -122,8 +164,9 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(TRAVELER_NAME, null, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Email é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Email é obrigatório", exception.getMessage());
+		
 	}
 	
 	@Test
@@ -131,8 +174,9 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(TRAVELER_NAME, EMPTY, phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Email é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Email é obrigatório", exception.getMessage());
+		
 	}
 	
 	@Test
@@ -140,8 +184,9 @@ public class TravelerServiceTest {
 		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
 		Traveler traveler = buildTraveler(TRAVELER_NAME,TRAVELER_EMAIL_INVALID , phone);
 		
-		Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler),
-				"Email é obrigatório");
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
+		Assertions.assertEquals("Email inválido", exception.getMessage());
+		
 	}
 	
 }

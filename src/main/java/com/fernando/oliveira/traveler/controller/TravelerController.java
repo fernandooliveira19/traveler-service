@@ -26,11 +26,13 @@ public class TravelerController {
 	private TravelerService travelerService;
 	
 	@PostMapping
-	public ResponseEntity<TravelerDTO> createTraveler(@Valid @RequestBody TravelerDTO dto){
+	public ResponseEntity<TravelerDTO> createTraveler(@RequestBody @Valid TravelerDTO dto){
 		
-		TravelerDTO createdTraveler = travelerService.createTraveler(dto);
+		Traveler travelerToSave = dto.convertToTraveler();
 		
-		return new ResponseEntity<TravelerDTO>(createdTraveler, HttpStatus.OK);
+		Traveler createdTraveler = travelerService.save(travelerToSave);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdTraveler.convertToDTO());
 		
 	}
 	
@@ -47,19 +49,6 @@ public class TravelerController {
 			return  new ResponseEntity<TravelerDTO>(dto, HttpStatus.OK);
 		
 	}
-	
-	
-//	 @ExceptionHandler({TravelerException.class})
-//	    public ResponseEntity<Object> handleTravelerException(TravelerException ex) {
-//
-//	        final String message = ex.getMessage();
-//	        final String exceptionMessage = ExceptionUtils.getRootCauseMessage(ex);
-//
-//	        final List<TravelerExceptionHandler.Erro> errors = Arrays.asList(new TravelerExceptionHandler.Erro(message, exceptionMessage));
-//
-//	        return ResponseEntity.badRequest().body(errors);
-//	    }
-	
-	
+
 
 }
