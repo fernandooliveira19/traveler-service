@@ -65,8 +65,11 @@ public class TravelerServiceImpl implements TravelerService{
 
 	@Override
 	public List<Traveler> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Traveler> result = travelerRepository.findAll();
+		if(result.isEmpty()) {
+			throw new TravelerNotFoundException("Não foram encontrados resultados");
+		}
+		return result;
 	}
 	
 	@Override

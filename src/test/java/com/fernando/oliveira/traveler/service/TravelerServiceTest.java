@@ -4,6 +4,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -234,6 +236,28 @@ public class TravelerServiceTest {
 		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findTravelerByName(param));
 		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
 		
+	}
+	
+	@Test
+	public void shouldReturnListOfTravelers() {
+		
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		
+		Mockito.when(travelerRepository.findAll()).thenReturn(Arrays.asList(savedTraveler));
+		
+		List<Traveler> result = travelerService.findAll();
+		
+		Assertions.assertFalse(result.isEmpty());
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenListTravelerHasEmpty() {
+		
+		Mockito.when(travelerRepository.findAll()).thenReturn(new ArrayList<>());
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findAll());
+		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
 	}
 	
 }
