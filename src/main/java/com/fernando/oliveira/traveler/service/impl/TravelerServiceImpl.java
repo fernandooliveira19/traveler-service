@@ -17,6 +17,7 @@ import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
 import com.fernando.oliveira.traveler.service.exception.TravelerException;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
+import com.fernando.oliveira.traveler.service.exception.TravelerNotFoundException;
 
 @Service
 public class TravelerServiceImpl implements TravelerService{
@@ -55,9 +56,11 @@ public class TravelerServiceImpl implements TravelerService{
 	}
 	
 	@Override
-	public Optional<Traveler> findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Traveler findById(Long id) {
+		
+		Optional<Traveler> result = travelerRepository.findById(id);
+		
+		return result.orElseThrow(() -> new TravelerNotFoundException("Viajante não encontrado pelo id: " + id) );
 	}
 
 	@Override
@@ -65,11 +68,20 @@ public class TravelerServiceImpl implements TravelerService{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	@Override
-	public List<Traveler> findTravelersByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Traveler findTravelerByName(String name) {
+		Optional<Traveler> result = travelerRepository.findByName(name);
+		return result.orElseThrow(() -> new TravelerNotFoundException("Não foram encontrados resultados"));
+	}
+
+	
+	@Override
+	public List<Traveler> findByNameContainingOrderByNameAsc(String name) {
+		
+		Optional<List<Traveler>> result = travelerRepository.findByNameContainingOrderByNameAsc(name);
+		
+		return result.orElseThrow(() -> new TravelerNotFoundException("Não foram encontrados resultados"));
 	}
 	
 	private void validate(Traveler traveler) {
@@ -147,6 +159,12 @@ public class TravelerServiceImpl implements TravelerService{
 		}
 
 	}
+
+	
+
+	
+
+
 
 	
 

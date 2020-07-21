@@ -39,14 +39,9 @@ public class TravelerController {
 	@GetMapping("/{id}")
 	public ResponseEntity<TravelerDTO> findById(@PathVariable("id") Long id){
 		
-		Optional<Traveler> traveler = travelerService.findById(id);
+		Traveler traveler = travelerService.findById(id);
 		
-		TravelerDTO dto = TravelerDTO.builder().name(traveler.get().getName()).build();
-		
-		if(traveler.isPresent()) {
-			return 	new ResponseEntity<TravelerDTO>(dto, HttpStatus.OK);
-		}
-			return  new ResponseEntity<TravelerDTO>(dto, HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK).body(traveler.convertToDTO());
 		
 	}
 

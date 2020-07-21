@@ -3,10 +3,10 @@ package com.fernando.oliveira.traveler.service;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +19,7 @@ import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
+import com.fernando.oliveira.traveler.service.exception.TravelerNotFoundException;
 import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -186,6 +187,52 @@ public class TravelerServiceTest {
 		
 		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.save(traveler));
 		Assertions.assertEquals("Email inválido", exception.getMessage());
+		
+	}
+	
+	@Test
+	public void shouldReturnTravelerById() {
+		Long travelerId = new Long(1L);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		savedTraveler.setId(1L);
+		Mockito.when(travelerRepository.findById(travelerId)).thenReturn(Optional.of(savedTraveler));
+		
+		Traveler result = travelerService.findById(travelerId);
+		
+		Assertions.assertEquals(result.getId(), 1L);
+		
+	}
+	
+	@Test 
+	public void mustReturnExceptionMessageWhenTravelerNotFoundById() {
+		
+		Long id = 1001L;
+		Mockito.when(travelerRepository.findById(id)).thenReturn(Optional.empty());
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findById(id));
+		Assertions.assertEquals("Viajante não encontrado pelo id: " + id, exception.getMessage());
+	}
+	
+	@Test
+	public void shouldReturnEmptyListWhenDataNotFound() {
+		
+		String name = "XPTO";
+		Mockito.when(travelerRepository.findByNameContainingOrderByNameAsc(name)).thenReturn(Optional.empty());
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findByNameContainingOrderByNameAsc(name));
+		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
+		
+	}
+	
+	@Test
+	public void shouldReturnExceptionMessageWhenTravelerNotFoundByName() {
+		
+		String param = "XPTO";
+		Mockito.when(travelerRepository.findByName(param)).thenReturn(Optional.empty());
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findTravelerByName(param));
+		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
 		
 	}
 	
