@@ -70,5 +70,28 @@ public class TravelerControllerTest {
 		
 	}
 	
+	@Test
+	public void shouldReturnTravelerById() throws Exception{
+		
+		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
+		Traveler traveler = dto.convertToTraveler();
+		traveler.setId(1L);
+		Mockito.when(travelerService.findById(Mockito.anyLong())).thenReturn(traveler);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING +"/1")
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING);
+//												.param("id", "1");
+//												.content(this.mapper.writeValueAsBytes(dto));
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id", is(1)))
+				.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(traveler.convertToDTO())));
+		
+		
+	}
+	
 	
 }
