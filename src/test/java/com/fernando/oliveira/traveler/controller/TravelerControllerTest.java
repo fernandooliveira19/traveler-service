@@ -29,6 +29,7 @@ public class TravelerControllerTest {
 	private static final Integer PHONE_PREFIX = new Integer(11);
 	private static final String PHONE_NUMBER = "95555-5555";
 	
+	private static final Long TRAVELER_ID = new Long(1);
 	private static final String TRAVELER_NAME= "TRAVELER 04";
 	private static final String TRAVELER_EMAIL= "traveler04@test.com";
 	private static final String TRAVELER_DOCUMENT= "444.444.444.-44";
@@ -53,7 +54,7 @@ public class TravelerControllerTest {
 		
 		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
 		Traveler traveler = dto.convertToTraveler();
-		traveler.setId(1L);
+		traveler.setId(TRAVELER_ID);
 		Mockito.when(travelerService.save(Mockito.any(Traveler.class))).thenReturn(traveler);
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post(REQUEST_MAPPING)
@@ -78,12 +79,11 @@ public class TravelerControllerTest {
 		traveler.setId(1L);
 		Mockito.when(travelerService.findById(Mockito.anyLong())).thenReturn(traveler);
 		
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING +"/1")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING +"/" + TRAVELER_ID)
 												.contentType(MediaType.APPLICATION_JSON)
 												.accept(MediaType.APPLICATION_JSON)
 												.characterEncoding(ENCONDING);
-//												.param("id", "1");
-//												.content(this.mapper.writeValueAsBytes(dto));
+
 		
 		mockMvc.perform(builder)
 				.andExpect(status().isOk())
