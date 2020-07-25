@@ -3,20 +3,28 @@ package com.fernando.oliveira.traveler.service.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
+import com.fernando.oliveira.traveler.dto.TravelerDTO;
+import com.fernando.oliveira.traveler.model.PageModel;
+import com.fernando.oliveira.traveler.model.PageRequestModel;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.PhoneService;
 import com.fernando.oliveira.traveler.service.TravelerService;
 import com.fernando.oliveira.traveler.service.exception.TravelerException;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
+import com.fernando.oliveira.traveler.service.exception.TravelerNotFoundException;
 
 @Service
 public class TravelerServiceImpl implements TravelerService{
@@ -51,25 +59,76 @@ public class TravelerServiceImpl implements TravelerService{
 		
 		validate(traveler);
 		
-		return travelerRepository.save(traveler);
+		Traveler savedTraveler = findById(traveler.getId());
+		
+		savedTraveler.setName(traveler.getName());
+		savedTraveler.setEmail(traveler.getEmail());
+		savedTraveler.setDocument(traveler.getDocument());
+		savedTraveler.getPhone().setPrefix(traveler.getPhone().getPrefix());
+		savedTraveler.getPhone().setNumber(traveler.getPhone().getNumber());
+		
+		return travelerRepository.save(savedTraveler);
 	}
 	
 	@Override
-	public Optional<Traveler> findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Traveler findById(Long id) {
+		
+		Optional<Traveler> result = travelerRepository.findById(id);
+		
+		return result.orElseThrow(() -> new TravelerNotFoundException("Viajante não encontrado pelo id: " + id) );
 	}
 
 	@Override
 	public List<Traveler> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Traveler> result = travelerRepository.findAll();
+		if(result.isEmpty()) {
+			throw new TravelerNotFoundException("Não foram encontrados resultados");
+		}
+		return result;
+	}
+	
+	@Override
+	public Traveler findTravelerByName(String name) {
+		Optional<Traveler> result = travelerRepository.findByName(name);
+		return result.orElseThrow(() -> new TravelerNotFoundException("Não foram encontrados resultados"));
+	}
+	
+	@Override
+	public PageModel<TravelerDTO> findAll(PageRequestModel pageRequestModel) {
+		
+		Pageable pageable = pageRequestModel.toSpringPageRequest();
+		
+		Page<Traveler> page = travelerRepository.findAll(pageable);
+		
+		List<TravelerDTO> collect = page.getContent()
+		.stream()
+		.map((e) -> e.convertToDTO())
+		.collect(Collectors.toList());
+		
+		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>((int)page.getTotalElements(), page.getSize(),page.getTotalPages(), collect);
+		
+		return pageModel;
 	}
 
+	
 	@Override
-	public List<Traveler> findTravelersByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public PageModel<TravelerDTO> findByNameContainingOrderByNameAsc(String name, PageRequestModel pageRequestModel) {
+		Pageable pageable = PageRequest.of(pageRequestModel.getPage(), pageRequestModel.getSize());
+		
+		Page<Traveler> page = travelerRepository.findByNameContainingOrderByNameAsc(name, pageable);
+		
+		List<TravelerDTO> collect = page.getContent()
+				.stream()
+				.map((e) -> e.convertToDTO())
+				.collect(Collectors.toList());
+		
+		if(collect.isEmpty()) {
+			throw new TravelerNotFoundException("Não foram encontrados resultados");
+		}
+		
+		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>((int)page.getTotalElements(), page.getSize(),page.getTotalPages(), collect);
+		
+		return pageModel;
 	}
 	
 	private void validate(Traveler traveler) {
@@ -90,10 +149,11 @@ public class TravelerServiceImpl implements TravelerService{
 	}
 
 	public void validateUniqueTraveler(Traveler traveler) {
-		Optional<Traveler> travelerSaved = travelerRepository.findByName(traveler.getName());
+		Optional<Traveler> savedTraveler = travelerRepository.findByName(traveler.getName());
 		
-		if(travelerSaved.isPresent()
-				&& traveler.getId() == null) {
+		if(savedTraveler.isPresent()
+				&& (traveler.getId() == null 
+					|| !traveler.getId().equals(savedTraveler.get().getId()))) {
 			throw new TravelerInvalidException("Já existe viajante com o nome informado");
 		}
 	}
@@ -129,9 +189,6 @@ public class TravelerServiceImpl implements TravelerService{
 	
 	private void validateEmail(String email) {
 
-		if (email == null) {
-			throw new TravelerInvalidException("Email é obrigatorio");
-		}
 		String inv = "((.)*@(.)*@(.)*|(.)*[.][.](.)*|(.)*[.]@(.)*|(.)*@[.](.)*|^[.](.)*)";
 		boolean invalido = Pattern.matches(inv, email);
 
@@ -147,6 +204,14 @@ public class TravelerServiceImpl implements TravelerService{
 		}
 
 	}
+
+	
+
+	
+
+	
+
+
 
 	
 
