@@ -24,6 +24,8 @@ import com.fernando.oliveira.traveler.domain.Traveler;
 public class TravelerRepositoryTest {
 	
 	private static final String TRAVELER_NAME= "TRAVELER 01";
+	private static final String PART_TRAVELER_NAME= "TRAVELER";
+	private static final String NOT_FOUND_NAME= "XPTO";
 	
 	@Autowired
 	private TravelerRepository travelerRepository; 
@@ -38,12 +40,31 @@ public class TravelerRepositoryTest {
 	}
 	
 	@Test
+	public void shouldNotReturnTravelerByName() {
+		
+		Optional<Traveler> result = travelerRepository.findByName(NOT_FOUND_NAME);
+		
+		Assertions.assertThat(result.isPresent()).isFalse();
+		
+	}
+	
+	@Test
 	public void shuoldReturnTravelerByPartOfName() {
-		String name = "TRAVELER";
+		
+		Pageable pageable = PageRequest.of(1, 5);
+		Page<Traveler> result = travelerRepository.findByNameContainingOrderByNameAsc(PART_TRAVELER_NAME, pageable);
+		
+		Assertions.assertThat(result.getTotalElements()).isEqualTo(3);
+		
+	}
+	
+	@Test
+	public void shuoldNotReturnTravelerByPartOfName() {
+		String name = NOT_FOUND_NAME;
 		Pageable pageable = PageRequest.of(1, 5);
 		Page<Traveler> result = travelerRepository.findByNameContainingOrderByNameAsc(name, pageable);
 		
-		Assertions.assertThat(result.getTotalElements()).isEqualTo(3);
+		Assertions.assertThat(result.getTotalElements()).isEqualTo(0);
 		
 	}
 		
