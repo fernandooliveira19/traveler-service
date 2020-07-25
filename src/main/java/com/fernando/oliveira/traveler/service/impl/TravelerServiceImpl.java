@@ -59,7 +59,15 @@ public class TravelerServiceImpl implements TravelerService{
 		
 		validate(traveler);
 		
-		return travelerRepository.save(traveler);
+		Traveler savedTraveler = findById(traveler.getId());
+		
+		savedTraveler.setName(traveler.getName());
+		savedTraveler.setEmail(traveler.getEmail());
+		savedTraveler.setDocument(traveler.getDocument());
+		savedTraveler.getPhone().setPrefix(traveler.getPhone().getPrefix());
+		savedTraveler.getPhone().setNumber(traveler.getPhone().getNumber());
+		
+		return travelerRepository.save(savedTraveler);
 	}
 	
 	@Override
@@ -141,10 +149,11 @@ public class TravelerServiceImpl implements TravelerService{
 	}
 
 	public void validateUniqueTraveler(Traveler traveler) {
-		Optional<Traveler> travelerSaved = travelerRepository.findByName(traveler.getName());
+		Optional<Traveler> savedTraveler = travelerRepository.findByName(traveler.getName());
 		
-		if(travelerSaved.isPresent()
-				&& traveler.getId() == null) {
+		if(savedTraveler.isPresent()
+				&& (traveler.getId() == null 
+					|| !traveler.getId().equals(savedTraveler.get().getId()))) {
 			throw new TravelerInvalidException("Já existe viajante com o nome informado");
 		}
 	}

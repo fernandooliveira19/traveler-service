@@ -6,18 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.hamcrest.core.IsEqual;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,7 +22,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
 import com.fernando.oliveira.traveler.model.PageModel;
@@ -154,6 +149,31 @@ public class TravelerControllerTest {
 				.andExpect(jsonPath("$.pageSize", is(5)))
 				.andExpect(jsonPath("$.totalPages", is(1)));
 
+		
+		
+	}
+	
+	@Test
+	public void shouldUpdateTraveler() throws Exception{
+		
+		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME + "ALTER").email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
+		
+		Traveler traveler = dto.convertToTraveler();
+		traveler.setId(TRAVELER_ID);
+		
+		Mockito.when(travelerService.update(Mockito.any(Traveler.class))).thenReturn(traveler);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.put(REQUEST_MAPPING + "/" + TRAVELER_ID)
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING)
+												.content(this.mapper.writeValueAsBytes(dto));
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id", is(1)))
+				.andExpect(jsonPath("$.name", is(TRAVELER_NAME + "ALTER")))
+				.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(traveler.convertToDTO())));
 		
 		
 	}

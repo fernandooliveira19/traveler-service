@@ -46,8 +46,8 @@ public class TravelerServiceTest {
 	
 	private static final String EMPTY = "";
 	
-	private static final int PAGE_01 = 0;
-	private static final int PAGE_SIZE = 5;
+	private static final String FIRST_PAGE = "0";
+	private static final String PAGE_SIZE = "5";
 	
 	@Mock
 	private TravelerRepository travelerRepository;
@@ -286,8 +286,8 @@ public class TravelerServiceTest {
 	public void shouldReturnTravelerListPageable() {
 
 		Map<String,String> params = new HashMap<String, String>();
-		params.put("page", "0");
-		params.put("size", "5");
+		params.put("page", FIRST_PAGE);
+		params.put("size", PAGE_SIZE);
 		params.put("sort","");
 		PageRequestModel pageRequestModel = new PageRequestModel(params);
 		
@@ -313,8 +313,8 @@ public class TravelerServiceTest {
 	public void shouldReturnTravelersByName() {
 		
 		Map<String,String> params = new HashMap<String, String>();
-		params.put("page", "0");
-		params.put("size", "5");
+		params.put("page", FIRST_PAGE);
+		params.put("size", PAGE_SIZE);
 		params.put("sort","");
 		PageRequestModel pageRequestModel = new PageRequestModel(params);
 		
@@ -336,10 +336,93 @@ public class TravelerServiceTest {
 		Assertions.assertEquals(result.getElements().get(0).getName(), TRAVELER_NAME);
 		
 		
+	}
+	
+	@Test
+	public void shouldUpdateTraveler() {
+
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler("NAME ALTERED", TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
 		
+		Phone savedPhone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, savedPhone);
+		savedTraveler.setId(1L);
+		
+		Mockito.when(travelerRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedTraveler));
+	
+		
+		travelerService.update(travelerToUpdate);
+		
+		Assertions.assertEquals(travelerToUpdate.getName(), savedTraveler.getName());
+		verify(travelerRepository).save(travelerToUpdate);
+		
+	}
+	
+	@Test
+	public void shouldUpdateTravelerPhone() {
+
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, "22222-2222");
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Phone savedPhone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, savedPhone);
+		savedTraveler.setId(1L);
+		
+		Mockito.when(travelerRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedTraveler));
+	
+		
+		travelerService.update(travelerToUpdate);
+		
+		Assertions.assertEquals(travelerToUpdate.getPhone().getNumber(), savedTraveler.getPhone().getNumber());
+		verify(travelerRepository).save(travelerToUpdate);
 		
 	}
 	
 	
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPhoneNull() {
+
+		
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, null);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("Telefone é obrigatório" , exception.getMessage());
+		
+	}
+
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithInvalidEmail() {
+
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, "email.invalid.com", phone);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("Email inválido" , exception.getMessage());
+		
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithNameThatExist() {
+
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Phone savedPhone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, savedPhone);
+		savedTraveler.setId(2L);
+		
+		Mockito.when(travelerRepository.findByName(TRAVELER_NAME)).thenReturn(Optional.of(savedTraveler));
+		
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("Já existe viajante com o nome informado" , exception.getMessage());
+		
+	}
+
 	
 }

@@ -1,8 +1,6 @@
 package com.fernando.oliveira.traveler.controller;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -12,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,14 +69,20 @@ public class TravelerController {
 		
 		PageModel<TravelerDTO> result = travelerService.findByNameContainingOrderByNameAsc(name, pageRequestModel);
 
-//		List<TravelerDTO> resultDTO = convertTravelersToListDTO(result);
+
 
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	private List<TravelerDTO> convertTravelersToListDTO(List<Traveler> result) {
-		List<TravelerDTO> resultDTO = result.stream().map(e -> e.convertToDTO()).sorted().collect(Collectors.toList());
-		return resultDTO;
-	}
 
+	@PutMapping("/{id}")
+	public ResponseEntity<TravelerDTO> update(@PathVariable("id") Long id, @RequestBody TravelerDTO travelerDTO){
+		
+		Traveler travelerToUpdate = travelerDTO.convertToTraveler();
+		travelerToUpdate.setId(id);
+		
+		Traveler updatedTraveler = travelerService.update(travelerToUpdate);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(updatedTraveler.convertToDTO());
+	}
 }
