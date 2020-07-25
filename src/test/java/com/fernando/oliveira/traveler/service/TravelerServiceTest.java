@@ -5,7 +5,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -16,9 +18,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
+import com.fernando.oliveira.traveler.dto.TravelerDTO;
+import com.fernando.oliveira.traveler.model.PageModel;
+import com.fernando.oliveira.traveler.model.PageRequestModel;
 import com.fernando.oliveira.traveler.repository.TravelerRepository;
 import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException;
 import com.fernando.oliveira.traveler.service.exception.TravelerNotFoundException;
@@ -36,6 +45,9 @@ public class TravelerServiceTest {
 	private static final String TRAVELER_EMAIL_INVALID = "invalid.email.com";
 	
 	private static final String EMPTY = "";
+	
+	private static final int PAGE_01 = 0;
+	private static final int PAGE_SIZE = 5;
 	
 	@Mock
 	private TravelerRepository travelerRepository;
@@ -219,10 +231,20 @@ public class TravelerServiceTest {
 	@Test
 	public void shouldReturnEmptyListWhenDataNotFound() {
 		
-		String name = "XPTO";
-		Mockito.when(travelerRepository.findByNameContainingOrderByNameAsc(name)).thenReturn(Optional.empty());
+		Map<String,String> params = new HashMap<String, String>();
+		params.put("page", "0");
+		params.put("size", "5");
+		params.put("sort","");
+		PageRequestModel pageRequestModel = new PageRequestModel(params);
 		
-		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findByNameContainingOrderByNameAsc(name));
+		
+		Pageable pageable = PageRequest.of(0, 5);
+		Page<Traveler> page = new PageImpl<Traveler>(Arrays.asList(), pageable, Arrays.asList().size());
+		
+		String name = "XPTO";
+		Mockito.when(travelerRepository.findByNameContainingOrderByNameAsc(name, pageable)).thenReturn(page);
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findByNameContainingOrderByNameAsc(name,pageRequestModel));
 		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
 		
 	}
@@ -259,5 +281,65 @@ public class TravelerServiceTest {
 		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.findAll());
 		Assertions.assertEquals("Não foram encontrados resultados" , exception.getMessage());
 	}
+	
+	@Test
+	public void shouldReturnTravelerListPageable() {
+
+		Map<String,String> params = new HashMap<String, String>();
+		params.put("page", "0");
+		params.put("size", "5");
+		params.put("sort","");
+		PageRequestModel pageRequestModel = new PageRequestModel(params);
+		
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Pageable pageable = PageRequest.of(0, 5);
+		Page<Traveler> page = new PageImpl<Traveler>(Arrays.asList(savedTraveler), pageable, Arrays.asList(savedTraveler).size());
+		
+		Mockito.when(travelerRepository.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+		
+
+		PageModel<TravelerDTO> result = travelerService.findAll(pageRequestModel);
+		
+		Assertions.assertEquals(result.getTotalElements(), 1);
+		Assertions.assertNotNull(result.getElements());
+		Assertions.assertEquals(result.getPageSize(), 5);
+		Assertions.assertEquals(result.getElements().get(0).getName(), TRAVELER_NAME);
+		
+		
+	}
+	
+	@Test
+	public void shouldReturnTravelersByName() {
+		
+		Map<String,String> params = new HashMap<String, String>();
+		params.put("page", "0");
+		params.put("size", "5");
+		params.put("sort","");
+		PageRequestModel pageRequestModel = new PageRequestModel(params);
+		
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		Pageable pageable = PageRequest.of(0, 5);
+		Page<Traveler> page = new PageImpl<Traveler>(Arrays.asList(savedTraveler), pageable, Arrays.asList(savedTraveler).size());
+		String name = "ELER";
+		
+		Mockito.when(travelerRepository.findByNameContainingOrderByNameAsc(name, pageable)).thenReturn(page);
+		
+		
+		PageModel<TravelerDTO> result = travelerService.findByNameContainingOrderByNameAsc(name, pageRequestModel);
+		
+		
+		Assertions.assertEquals(result.getTotalElements(), 1);
+		Assertions.assertNotNull(result.getElements());
+		Assertions.assertEquals(result.getPageSize(), 5);
+		Assertions.assertEquals(result.getElements().get(0).getName(), TRAVELER_NAME);
+		
+		
+		
+		
+	}
+	
+	
 	
 }

@@ -5,11 +5,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,8 +26,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
+import com.fernando.oliveira.traveler.model.PageModel;
+import com.fernando.oliveira.traveler.model.PageRequestModel;
 import com.fernando.oliveira.traveler.service.TravelerService;
 
 @WebMvcTest(TravelerController.class)
@@ -36,6 +47,7 @@ public class TravelerControllerTest {
 	
 	
 	private static final String REQUEST_MAPPING = "/api/travelers";
+	private static final String SEARCH_MAPPING = "search";
 	private static final String ENCONDING = "UTF-8"; 
 	
 
@@ -89,6 +101,59 @@ public class TravelerControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(1)))
 				.andExpect(MockMvcResultMatchers.content().string(this.mapper.writeValueAsString(traveler.convertToDTO())));
+		
+		
+	}
+	
+	@Test
+	public void shouldReturnTravelerListPaginated() throws Exception{
+
+		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
+		List<TravelerDTO> travelers = new ArrayList<TravelerDTO>();
+		travelers.add(dto);
+		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>(travelers.size(), 5, 1, travelers);
+		
+		Mockito.when(travelerService.findAll(Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING)
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING);
+
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalElements", is(1)))
+				.andExpect(jsonPath("$.pageSize", is(5)))
+				.andExpect(jsonPath("$.totalPages", is(1)));
+
+		
+		
+	}
+	
+	@Test
+	public void shouldReturnTravelersByNamePaginated() throws Exception{
+
+		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
+		List<TravelerDTO> travelers = new ArrayList<TravelerDTO>();
+		travelers.add(dto);
+		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>(travelers.size(), 5, 1, travelers);
+		String name = "ELER";
+		
+		Mockito.when(travelerService.findByNameContainingOrderByNameAsc(Mockito.anyString(), Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING + "/" + SEARCH_MAPPING +"/"+ name)
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING);
+
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalElements", is(1)))
+				.andExpect(jsonPath("$.pageSize", is(5)))
+				.andExpect(jsonPath("$.totalPages", is(1)));
+
 		
 		
 	}

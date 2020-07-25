@@ -1,6 +1,5 @@
 package com.fernando.oliveira.traveler.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -8,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -37,23 +39,13 @@ public class TravelerRepositoryTest {
 	
 	@Test
 	public void shuoldReturnTravelerByPartOfName() {
-		String partOfName = "TRAVELER";
+		String name = "TRAVELER";
+		Pageable pageable = PageRequest.of(1, 5);
+		Page<Traveler> result = travelerRepository.findByNameContainingOrderByNameAsc(name, pageable);
 		
-		Optional<List<Traveler>> result = travelerRepository.findByNameContainingOrderByNameAsc(partOfName);
-		
-		Assertions.assertThat(result.isPresent()).isEqualTo(true);
-		
-	}
-	
-	@Test
-	public void shuoldReturnListOfTravelerByPartOfName() {
-		String partOfName = "TRAVELER";
-		
-		Optional<List<Traveler>> result = travelerRepository.findByNameContainingOrderByNameAsc(partOfName);
-		
-		Assertions.assertThat(result.get().size()).isEqualTo(3);
+		Assertions.assertThat(result.getTotalElements()).isEqualTo(3);
 		
 	}
-	
+		
 
 }
