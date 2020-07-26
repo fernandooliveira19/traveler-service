@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -131,11 +133,10 @@ public class TravelerControllerTest {
 		List<TravelerDTO> travelers = new ArrayList<TravelerDTO>();
 		travelers.add(dto);
 		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>(travelers.size(), 5, 1, travelers);
-		String name = "ELER";
 		
 		Mockito.when(travelerService.findByNameContainingOrderByNameAsc(Mockito.anyString(), Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
 		
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING + "/" + SEARCH_MAPPING +"/"+ name)
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING + "/" + SEARCH_MAPPING +"?name=ELER")
 												.contentType(MediaType.APPLICATION_JSON)
 												.accept(MediaType.APPLICATION_JSON)
 												.characterEncoding(ENCONDING);

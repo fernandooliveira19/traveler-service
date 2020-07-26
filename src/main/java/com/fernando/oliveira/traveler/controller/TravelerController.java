@@ -81,16 +81,18 @@ public class TravelerController {
 
 	}
 
-	@ApiOperation(value = "Realiza pesquisa de viajante pelo nome")
+	@ApiOperation(value = "Realiza pesquisa de viajantes por nome")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Pesquisa retornou dados com sucesso"),
 			@ApiResponse(code = 403, message = "Você não possui permissão para acessar esse recurso"),
 			@ApiResponse(code = 404, message = "Pesquisa não retornou resultados"),
 			@ApiResponse(code = 500, message = "Ocorreu algum erro inesperado. Tente novamente mais tarde") })
-	@GetMapping("/search/{name}")
-	public ResponseEntity<PageModel<TravelerDTO>> findTravelersByName(@PathVariable("name") String name,
-			Map<String, String> params) {
+	@GetMapping("/search")
+	public ResponseEntity<PageModel<TravelerDTO>> search(
+					@RequestParam Map<String, String> params) {
 
+		String name = params.get("name") != null ? params.get("name") : "";
+		
 		PageRequestModel pageRequestModel = new PageRequestModel(params);
 
 		PageModel<TravelerDTO> result = travelerService.findByNameContainingOrderByNameAsc(name, pageRequestModel);
