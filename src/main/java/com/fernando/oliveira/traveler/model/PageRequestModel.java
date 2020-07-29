@@ -19,17 +19,23 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PageRequestModel {
 
+	
+	private static final String PAGE= "page";
+	private static final String SIZE= "size";
+	private static final String SORT= "sort";
+	
+	
 	private int page = 0;
 	private int size = 5;
 	private String sort = "";
 	
 	public PageRequestModel(Map<String, String> params) {
-		if(params.containsKey("page"))
-			page = Integer.parseInt(params.get("page"));
-		if(params.containsKey("size"))
-			size = Integer.parseInt(params.get("size"));
-		if(params.containsKey("sort"))
-			sort = params.get("sort");
+		if(params.containsKey(PAGE))
+			page = Integer.parseInt(params.get(PAGE));
+		if(params.containsKey(SIZE))
+			size = Integer.parseInt(params.get(SIZE));
+		if(params.containsKey(SORT))
+			sort = params.get(SORT);
 	}
 	
 	public PageRequest toSpringPageRequest() {
@@ -43,7 +49,7 @@ public class PageRequestModel {
 				String column = prop.trim();
 				
 				if(column.startsWith("-")) {
-					column = column.replace("-","");
+					column = column.replace("-","").trim();
 					orders.add(Order.desc(column));
 				}else {
 					orders.add(Order.asc(column));

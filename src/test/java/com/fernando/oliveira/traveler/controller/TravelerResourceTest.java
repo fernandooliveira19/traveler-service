@@ -159,7 +159,7 @@ public class TravelerResourceTest {
 	
 	
 	@Test
-	public void shouldReturnTravelersByNameSortingPaginated() throws Exception{
+	public void shouldReturnTravelersBySortingPaginated() throws Exception{
 
 		TravelerDTO travelerDTO01 = TravelerDTO.builder().name(TRAVELER_NAME_1).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
 		TravelerDTO travelerDTO02 = TravelerDTO.builder().name(TRAVELER_NAME_2).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
@@ -175,9 +175,9 @@ public class TravelerResourceTest {
 //		params.put("sort", "-name");
 //		PageRequestModel pageRequestModel = new PageRequestModel(params);
 		
-		Mockito.when(travelerService.findByNameContainingOrderByNameAsc(Mockito.anyString(), Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
+		Mockito.when(travelerService.findAll(Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
 		
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING + "/" + SEARCH_MAPPING +"?name=ELER&page=0&size=5&sort=-name")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING +"?name=ELER&page=0&size=5&sort=-name,email")
 												.contentType(MediaType.APPLICATION_JSON)
 												.accept(MediaType.APPLICATION_JSON)
 												.characterEncoding(ENCONDING);
