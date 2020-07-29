@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(value = "/api/travelers", produces = "application/json")
-public class TravelerController {
+public class TravelerResource {
 
 	@Autowired
 	private TravelerService travelerService;
