@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.resource.exception;
+package com.fernando.oliveira.traveler.controller.exception;
 
 import java.util.ArrayList;
 import java.util.Arrays;

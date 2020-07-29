@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.resource;
+package com.fernando.oliveira.traveler.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,11 +22,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fernando.oliveira.traveler.controller.TravelerResource;
 import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
 import com.fernando.oliveira.traveler.model.PageModel;
 import com.fernando.oliveira.traveler.model.PageRequestModel;
-import com.fernando.oliveira.traveler.resource.TravelerResource;
 import com.fernando.oliveira.traveler.service.TravelerService;
 
 @WebMvcTest(TravelerResource.class)

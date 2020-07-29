@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.resource;
+package com.fernando.oliveira.traveler.controller;
 
 import java.util.Map;
 
