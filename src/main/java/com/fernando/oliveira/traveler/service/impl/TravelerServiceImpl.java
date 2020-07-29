@@ -113,7 +113,7 @@ public class TravelerServiceImpl implements TravelerService{
 	
 	@Override
 	public PageModel<TravelerDTO> findByNameContainingOrderByNameAsc(String name, PageRequestModel pageRequestModel) {
-		Pageable pageable = PageRequest.of(pageRequestModel.getPage(), pageRequestModel.getSize());
+		Pageable pageable = pageRequestModel.toSpringPageRequest();
 		
 		Page<Traveler> page = travelerRepository.findByNameContainingOrderByNameAsc(name, pageable);
 		
