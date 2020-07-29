@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.controller;
+package com.fernando.oliveira.traveler.resource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,11 +26,12 @@ import com.fernando.oliveira.traveler.domain.Traveler;
 import com.fernando.oliveira.traveler.dto.TravelerDTO;
 import com.fernando.oliveira.traveler.model.PageModel;
 import com.fernando.oliveira.traveler.model.PageRequestModel;
+import com.fernando.oliveira.traveler.resource.TravelerResource;
 import com.fernando.oliveira.traveler.service.TravelerService;
 
-@WebMvcTest(TravelerController.class)
+@WebMvcTest(TravelerResource.class)
 @ActiveProfiles("test")
-public class TravelerControllerTest {
+public class TravelerResourceTest {
 
 	private static final Integer PHONE_PREFIX = new Integer(11);
 	private static final String PHONE_NUMBER = "95555-5555";

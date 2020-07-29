@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.controller.exception;
+package com.fernando.oliveira.traveler.resource.exception;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import com.fernando.oliveira.traveler.service.exception.TravelerInvalidException
 import com.fernando.oliveira.traveler.service.exception.TravelerNotFoundException;
 
 @ControllerAdvice
-public class TravelerExceptionHandler extends ResponseEntityExceptionHandler {
+public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	private static final String INVALID_FIELDS_MESSAGE = "Invalid field(s)";
 

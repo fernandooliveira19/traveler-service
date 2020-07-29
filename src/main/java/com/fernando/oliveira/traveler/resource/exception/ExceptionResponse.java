@@ -1,4 +1,4 @@
-package com.fernando.oliveira.traveler.controller.exception;
+package com.fernando.oliveira.traveler.resource.exception;
 
 import java.io.Serializable;
 import java.util.Date;

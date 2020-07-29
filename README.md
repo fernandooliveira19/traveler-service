@@ -20,8 +20,8 @@ Tecnologias utilizadas:
 
 ##### Estrutura de pacotes
 * **config**: contém classes que implementam configurações do projeto
-* **controller**: contém classes dos endpoints
-* **controller.exception**: contém classes que tratam as excessões dos endpoints
+* **resource**: contém classes dos endpoints
+* **resource.exception**: contém classes que tratam as excessões dos endpoints
 * **domain**: contém classes que representam o modelo de dados
 * **dto**: contém classes que representam os dados retornados pelos endpoints
 * **model**: contém classes que são utilizadas como modelo padronizado
