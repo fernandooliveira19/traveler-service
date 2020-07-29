@@ -283,7 +283,28 @@ public class TravelerServiceTest {
 	}
 	
 	@Test
-	public void shouldReturnTravelerListPageable() {
+	public void shouldReturnTravelerList() {
+
+		
+		Phone phone01 = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler01 = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone01);
+		
+		Phone phone02 = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler02 = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone02);
+		
+		List<Traveler> list = new ArrayList<Traveler>(Arrays.asList(savedTraveler01, savedTraveler02));
+		
+		Mockito.when(travelerRepository.findAll()).thenReturn(list);
+		
+
+		List<Traveler> result = travelerService.findAll();
+		
+		Assertions.assertEquals(result.size() ,2);
+				
+	}
+	
+	@Test
+	public void shouldReturnTravelerListPaginated() {
 
 		Map<String,String> params = new HashMap<String, String>();
 		params.put("page", FIRST_PAGE);

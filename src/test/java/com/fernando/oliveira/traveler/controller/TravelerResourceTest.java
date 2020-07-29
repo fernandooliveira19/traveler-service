@@ -176,5 +176,32 @@ public class TravelerResourceTest {
 		
 	}
 	
+	@Test
+	public void shouldReturnTravelersSortingByNamePaginated() throws Exception{
+
+		TravelerDTO dto = TravelerDTO.builder().name(TRAVELER_NAME).email(TRAVELER_EMAIL).document(TRAVELER_DOCUMENT).prefixPhone(PHONE_PREFIX).numberPhone(PHONE_NUMBER).build();
+		List<TravelerDTO> travelers = new ArrayList<TravelerDTO>();
+		travelers.add(dto);
+		PageModel<TravelerDTO> pageModel = new PageModel<TravelerDTO>(travelers.size(), 5, 1, travelers);
+		String name = "ELER";
+		
+		Mockito.when(travelerService.findByNameContainingOrderByNameAsc(Mockito.anyString(), Mockito.any(PageRequestModel.class))).thenReturn(pageModel);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(REQUEST_MAPPING + "/" + SEARCH_MAPPING +"/"+ name)
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING);
+
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.totalElements", is(1)))
+				.andExpect(jsonPath("$.pageSize", is(5)))
+				.andExpect(jsonPath("$.totalPages", is(1)));
+
+		
+		
+	}
+	
 	
 }

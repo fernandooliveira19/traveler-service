@@ -193,7 +193,7 @@ public class TravelerServiceImpl implements TravelerService{
 		boolean invalido = Pattern.matches(inv, email);
 
 		if (invalido) {
-			throw new TravelerException("Email inválido");
+			throw new TravelerInvalidException("Email inválido");
 		}
 
 		String regValido = "^(.)+@[a-zA-Z0-9[-][.]]+[.]([a-zA-Z]{2,61}|[0-9]{1,3})";
