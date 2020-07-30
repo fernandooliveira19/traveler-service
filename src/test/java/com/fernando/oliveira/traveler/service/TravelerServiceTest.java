@@ -454,6 +454,30 @@ public class TravelerServiceTest {
 		
 	}
 	
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneLess2Digits() {
+
+		Phone phone = buildPhone(1, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("DDD inválido" , exception.getMessage());
+		
+	}
+
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneUp2Digits() {
+
+		Phone phone = buildPhone(123, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("DDD inválido" , exception.getMessage());
+		
+	}
+
 
 	
 }
