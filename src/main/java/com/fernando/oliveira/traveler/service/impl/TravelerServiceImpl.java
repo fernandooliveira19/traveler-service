@@ -185,6 +185,11 @@ public class TravelerServiceImpl implements TravelerService{
 		if(StringUtils.isEmpty(traveler.getPhone().getNumber())){
 			throw new TravelerInvalidException("Telefone inválido");
 		}
+		
+		if(traveler.getPhone().getPrefix() != null
+				&& String.valueOf(traveler.getPhone().getPrefix()).length() != 2) {
+			throw new TravelerInvalidException("DDD inválido");
+		}
 	}
 	
 	private void validateEmail(String email) {
@@ -203,6 +208,15 @@ public class TravelerServiceImpl implements TravelerService{
 			throw new TravelerInvalidException("Email inválido");
 		}
 
+	}
+
+	@Override
+	public void deleteById(Long id) {
+		
+		Traveler travelerToUpdate = findById(id);
+		
+		travelerRepository.delete(travelerToUpdate);
+		
 	}
 
 	

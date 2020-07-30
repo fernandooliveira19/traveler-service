@@ -1,9 +1,13 @@
 package com.fernando.oliveira.traveler.dto;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Length;
 
 import com.fernando.oliveira.traveler.domain.Phone;
 import com.fernando.oliveira.traveler.domain.Traveler;
@@ -14,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Data
 @Builder
@@ -40,15 +43,13 @@ public class TravelerDTO {
 	private String document;
 	
 	@ApiModelProperty(value= "DDD do telefone do viajante")
-	@NotBlank(message="DDD é obrigatório")
 	@NotNull(message="DDD é obrigatório")
-	@Size(min=2, max=2, message="DDD deve ter 2 dígitos")
 	private Integer prefixPhone;
 	
 	@ApiModelProperty(value= "Numero do telefone do viajante")
 	@NotBlank(message="Telefone é obrigatório")
 	@NotNull(message="Telefone é obrigatório")
-	@Size(min=8, max=9, message="Telefone inválido")
+	@Length(min=8, max=10, message="Telefone inválido")
 	private String numberPhone; 
 	
 

@@ -1,5 +1,6 @@
 package com.fernando.oliveira.traveler.service;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -423,6 +424,60 @@ public class TravelerServiceTest {
 		Assertions.assertEquals("Já existe viajante com o nome informado" , exception.getMessage());
 		
 	}
+	
+	@Test
+	public void shouldDeleteTraveler() {
+		
+		Long id = new Long(1);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToDelete = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToDelete.setId(id);
+		Mockito.when(travelerRepository.findById(id)).thenReturn(Optional.of(travelerToDelete));
+		
+		travelerService.deleteById(id);
+		
+		verify(travelerRepository, times(1)).delete(travelerToDelete);
+		
+	}
+	
+	@Test
+	public void mustReturnExceptionDeleteTravelerThatNonExist() {
+
+		Long id = new Long(2);
+		Phone phone = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToDelete = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToDelete.setId(id);
+		Mockito.when(travelerRepository.findById(id)).thenReturn(Optional.empty());
+		
+		Exception exception = Assertions.assertThrows(TravelerNotFoundException.class, () -> travelerService.deleteById(id));
+		Assertions.assertEquals("Viajante não encontrado pelo id: 2" , exception.getMessage());
+		
+	}
+	
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneLess2Digits() {
+
+		Phone phone = buildPhone(1, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("DDD inválido" , exception.getMessage());
+		
+	}
+
+	@Test
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneUp2Digits() {
+
+		Phone phone = buildPhone(123, TRAVELER_PHONE_NUMBER);
+		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
+		travelerToUpdate.setId(1L);
+		
+		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
+		Assertions.assertEquals("DDD inválido" , exception.getMessage());
+		
+	}
+
 
 	
 }

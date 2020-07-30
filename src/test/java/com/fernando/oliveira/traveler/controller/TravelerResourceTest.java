@@ -218,5 +218,21 @@ public class TravelerResourceTest {
 		
 	}
 	
+	@Test
+	public void shouldDeleteTravelerById() throws Exception{
+		
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.delete(REQUEST_MAPPING +"/" + TRAVELER_ID)
+												.contentType(MediaType.APPLICATION_JSON)
+												.accept(MediaType.APPLICATION_JSON)
+												.characterEncoding(ENCONDING);
+		
+		mockMvc.perform(builder)
+				.andExpect(status().isNoContent());
+				
+		
+		
+	}
+	
 	
 }
