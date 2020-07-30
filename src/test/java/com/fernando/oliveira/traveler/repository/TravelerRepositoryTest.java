@@ -1,5 +1,6 @@
 package com.fernando.oliveira.traveler.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -65,6 +66,20 @@ public class TravelerRepositoryTest {
 		Page<Traveler> result = travelerRepository.findByNameContainingOrderByNameAsc(name, pageable);
 		
 		Assertions.assertThat(result.getTotalElements()).isEqualTo(0);
+		
+	}
+	
+	@Test
+	public void shuoldReturnTravelerListOrdenedByName() {
+		
+		List<Traveler> result = travelerRepository.findAllByOrderByName();
+		
+		Assertions.assertThat(result.size()).isEqualTo(3);
+		Assertions.assertThat(result.get(0).getName()).isEqualTo("TRAVELER 01");
+		Assertions.assertThat(result.get(1).getName()).isEqualTo("TRAVELER 02");
+		Assertions.assertThat(result.get(2).getName()).isEqualTo("TRAVELER 03");
+		
+		
 		
 	}
 		

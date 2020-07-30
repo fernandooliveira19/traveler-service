@@ -219,6 +219,12 @@ public class TravelerServiceImpl implements TravelerService{
 		
 	}
 
+	@Override
+	public List<Traveler> findAllByOrderByName() {
+		
+		return travelerRepository.findAllByOrderByName();
+	}
+
 	
 
 	

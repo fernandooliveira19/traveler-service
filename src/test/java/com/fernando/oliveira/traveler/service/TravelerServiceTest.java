@@ -37,7 +37,7 @@ import com.fernando.oliveira.traveler.service.impl.TravelerServiceImpl;
 @ExtendWith(MockitoExtension.class)
 public class TravelerServiceTest {
 
-	private static final String TRAVELER_NAME = "traveler 01";
+	private static final String TRAVELER_NAME = "traveler";
 	private static final String TRAVELER_EMAIL = "traveler@test.com";
 	
 	private static final Integer TRAVELER_PHONE_PREFIX = 11;
@@ -467,7 +467,7 @@ public class TravelerServiceTest {
 	}
 
 	@Test
-	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneUp2Digits() {
+	public void mustReturnExceptionMessageWhenUpdateTravelerWithPrefixPhoneMore2Digits() {
 
 		Phone phone = buildPhone(123, TRAVELER_PHONE_NUMBER);
 		Traveler travelerToUpdate = buildTraveler(TRAVELER_NAME, TRAVELER_EMAIL, phone);
@@ -475,6 +475,28 @@ public class TravelerServiceTest {
 		
 		Exception exception = Assertions.assertThrows(TravelerInvalidException.class, () -> travelerService.update(travelerToUpdate));
 		Assertions.assertEquals("DDD inválido" , exception.getMessage());
+		
+	}
+	
+	@Test
+	public void shouldReturnTravelerListOrderedByName() {
+
+		Phone phone01 = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler01 = buildTraveler(TRAVELER_NAME +"_01" , TRAVELER_EMAIL, phone01);
+		
+		Phone phone02 = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler02 = buildTraveler(TRAVELER_NAME+"_02", TRAVELER_EMAIL, phone02);
+		
+		Phone phone03 = buildPhone(TRAVELER_PHONE_PREFIX, TRAVELER_PHONE_NUMBER);
+		Traveler savedTraveler03 = buildTraveler(TRAVELER_NAME+"_03", TRAVELER_EMAIL, phone03);
+		
+		Mockito.when(travelerRepository.findAllByOrderByName()).thenReturn(Arrays.asList(savedTraveler01, savedTraveler02, savedTraveler03));
+		
+		List<Traveler> result = travelerService.findAllByOrderByName();
+		
+		Assertions.assertEquals(result.get(0).getName(),TRAVELER_NAME+"_01");
+		Assertions.assertEquals(result.get(1).getName(),TRAVELER_NAME+"_02");
+		Assertions.assertEquals(result.get(2).getName(),TRAVELER_NAME+"_03");
 		
 	}
 

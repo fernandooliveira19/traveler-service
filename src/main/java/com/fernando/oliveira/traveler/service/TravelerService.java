@@ -24,6 +24,8 @@ public interface TravelerService {
 	public PageModel<TravelerDTO> findAll(PageRequestModel pageRequestModel);
 	
 	public void deleteById(Long id);
+	
+	public List<Traveler> findAllByOrderByName();
 
 
 	

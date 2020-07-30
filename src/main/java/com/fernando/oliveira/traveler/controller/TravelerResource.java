@@ -1,6 +1,8 @@
 package com.fernando.oliveira.traveler.controller;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -65,14 +67,14 @@ public class TravelerResource {
 
 	}
 
-	@ApiOperation(value = "Realiza busca de todos viajantes cadastrados")
+	@ApiOperation(value = "Realiza busca paginada de todos viajantes cadastrados")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 200, message = "Pesquisa retornou dados com sucesso"),
 			@ApiResponse(code = 403, message = "Você não possui permissão para acessar esse recurso"),
 			@ApiResponse(code = 404, message = "Pesquisa não retornou resultados"),
 			@ApiResponse(code = 500, message = "Ocorreu algum erro inesperado. Tente novamente mais tarde") })
-	@GetMapping
-	public ResponseEntity<PageModel<TravelerDTO>> findAll(@RequestParam Map<String, String> params) {
+	@GetMapping("/page")
+	public ResponseEntity<PageModel<TravelerDTO>> findAllPaginated(@RequestParam Map<String, String> params) {
 
 		PageRequestModel pageRequestModel = new PageRequestModel(params);
 
@@ -126,5 +128,24 @@ public class TravelerResource {
 		travelerService.deleteById(id);
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
+	@ApiOperation(value = "Realiza busca de todos viajantes cadastrados")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 200, message = "Pesquisa retornou dados com sucesso"),
+			@ApiResponse(code = 403, message = "Você não possui permissão para acessar esse recurso"),
+			@ApiResponse(code = 404, message = "Pesquisa não retornou resultados"),
+			@ApiResponse(code = 500, message = "Ocorreu algum erro inesperado. Tente novamente mais tarde") })
+	@GetMapping
+	public ResponseEntity<List<TravelerDTO>> findAll() {
+		
+		List<Traveler> travelers = travelerService.findAllByOrderByName();
+
+		List<TravelerDTO> result = travelers.stream()
+			.map(e -> e.convertToDTO())
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+
 	}
 }
