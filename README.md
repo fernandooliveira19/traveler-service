@@ -2,7 +2,7 @@
 Micro serviço responsável em gerenciar cadastros de viajantes
 
 ### Especificações técnicas
-Micro serviço desenvolvido utilizando as técnicas de TDD, clean code, testes unitários e integração.
+Micro serviço desenvolvido utilizando as técnicas de TDD, clean code, testes unitários, testes de integração.
 Tecnologias utilizadas:
 * JAVA 1.8
 * SpringBoot 2.3.1.RELEASE
@@ -20,8 +20,8 @@ Tecnologias utilizadas:
 
 ##### Estrutura de pacotes
 * **config**: contém classes que implementam configurações do projeto
-* **resource**: contém classes dos endpoints
-* **resource.exception**: contém classes que tratam as excessões dos endpoints
+* **controller**: contém classes dos endpoints
+* **controller.exception**: contém classes que tratam as excessões dos endpoints
 * **domain**: contém classes que representam o modelo de dados
 * **dto**: contém classes que representam os dados retornados pelos endpoints
 * **model**: contém classes que são utilizadas como modelo padronizado
