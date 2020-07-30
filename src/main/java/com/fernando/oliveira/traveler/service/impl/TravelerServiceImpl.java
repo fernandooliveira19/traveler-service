@@ -205,6 +205,15 @@ public class TravelerServiceImpl implements TravelerService{
 
 	}
 
+	@Override
+	public void deleteById(Long id) {
+		
+		Traveler travelerToUpdate = findById(id);
+		
+		travelerRepository.delete(travelerToUpdate);
+		
+	}
+
 	
 
 	
