@@ -29,7 +29,7 @@ public class SwaggerConfig implements WebMvcConfigurer{
 	public static final Contact DEFAULT_CONTACT = new Contact("Fernando Augusto","","fer.a.oliveira19@gmail.com");
 	
 	public static final ApiInfo DEFAULT = 
-			new ApiInfo("Awesome Traveler Documentation", "Awesome Traveler Api Description", "1.0", "urn:tos",
+			new ApiInfo("Traveler Documentation", "Traveler Api Description", "1.0", "urn:tos",
 	          DEFAULT_CONTACT, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", new ArrayList<VendorExtension>());
 	public static final Set<String> DEFAULT_CONSUMES_AND_PRODUCES = 
 			new HashSet<String>(Arrays.asList("application/json","application/xml"));
