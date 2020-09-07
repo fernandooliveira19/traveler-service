@@ -25,10 +25,12 @@ import com.fernando.oliveira.traveler.model.PageModel;
 import com.fernando.oliveira.traveler.model.PageRequestModel;
 import com.fernando.oliveira.traveler.service.TravelerService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+@Api(tags="Traveler endpoint")
 @RestController
 @RequestMapping(value = "/api/travelers", produces = "application/json")
 public class TravelerResource {
