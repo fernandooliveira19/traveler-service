@@ -124,6 +124,12 @@ public class TravelerResource {
 		return ResponseEntity.status(HttpStatus.OK).body(updatedTraveler.convertToDTO());
 	}
 	
+	@ApiOperation(value = "Realiza a exclusão de um viajante")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 204, message = "Dados excluido com sucesso"),
+			@ApiResponse(code = 403, message = "Você não possui permissão para acessar esse recurso"),
+			@ApiResponse(code = 404, message = "Pesquisa não retornou resultados"),
+			@ApiResponse(code = 500, message = "Ocorreu algum erro inesperado. Tente novamente mais tarde") })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable("id") Long id) {
 		
